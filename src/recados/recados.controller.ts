@@ -1,17 +1,18 @@
 /* eslint-disable prettier/prettier */
-import { Body, Controller, Delete, Get, Param, Patch, Post,} from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query,} from '@nestjs/common';
 import { MessagesService } from './recados.service';
 import { CreateMessageDTO } from './DTO/recados.dto';
 import { UpdateMessageDTO } from './DTO/update-recados.dto';
 import { MessagesEntity } from './entities/recados.entidade';
+import { PaginationDto } from 'src/commom/pagination.dto';
 
 @Controller('messages')
 export class MessagesController {
     constructor(private readonly messageService: MessagesService){}
 
     @Get()
-    findAll(){
-        return this.messageService.findAll()
+    findAll(@Query() pagination: PaginationDto){
+        return this.messageService.findAll(pagination)
     };
 
     @Get(':id')

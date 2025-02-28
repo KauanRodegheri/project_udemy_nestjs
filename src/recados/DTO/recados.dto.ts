@@ -1,4 +1,11 @@
-import { IsNotEmpty, IsString, MaxLength, MinLength } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsNumber,
+  IsString,
+  MaxLength,
+  MinLength,
+} from 'class-validator';
+import { User } from 'src/users/entities/user.entity';
 
 export class CreateMessageDTO {
   @IsString()
@@ -7,15 +14,9 @@ export class CreateMessageDTO {
   @MaxLength(255)
   texto: string;
 
-  @IsString()
-  @IsNotEmpty()
-  @MinLength(2)
-  @MaxLength(50)
-  de: string;
+  @IsNumber()
+  de: User;
 
-  @IsString()
-  @IsNotEmpty()
-  @MinLength(2)
-  @MaxLength(50)
-  para: string;
+  @IsNumber()
+  para: User;
 }
