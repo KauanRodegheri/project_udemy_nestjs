@@ -1,16 +1,21 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
+import { HashingServices } from 'src/auth/hashing/hashing.service';
 
 @Injectable()
 export class UsersService {
-
   constructor(
     @InjectRepository(User)
-    private readonly userRepository: Repository<User>
+    private readonly userRepository: Repository<User>,
+    private readonly hashingService: HashingServices,
   ) {}
 
   async create(createUserDto: CreateUserDto) {
@@ -21,11 +26,20 @@ export class UsersService {
       throw new BadRequestException('email ja existe no nosso banco');
     }
 
-    const user = await this.userRepository.create(createUserDto);
+    const password = createUserDto.password;
+    const passwordHash = await this.hashingService.hash(password);
 
-    await this.userRepository.save(user);
+    const user = {
+      username: createUserDto.username,
+      email: createUserDto.email,
+      password: passwordHash,
+    };
 
-    return user;
+    const userSaved = await this.userRepository.create(user);
+
+    await this.userRepository.save(userSaved);
+
+    return userSaved;
   }
 
   async findAll() {
@@ -57,8 +71,7 @@ export class UsersService {
       throw new NotFoundException('usuario não encontrado');
     }
 
-    return await this.userRepository.save(user)
-
+    return await this.userRepository.save(user);
   }
 
   async remove(id: number) {

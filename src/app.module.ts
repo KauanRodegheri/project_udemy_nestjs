@@ -6,12 +6,13 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { MessagesEntity } from './recados/entities/recados.entidade';
 import { UsersModule } from './users/users.module';
 import { User } from './users/entities/user.entity';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: 'localhost',
+      host: '127.0.0.1',
       port: 5432,
       username: 'postgres',
       password: 'Walker0078.',
@@ -21,6 +22,7 @@ import { User } from './users/entities/user.entity';
     }),
     RecadosModule,
     UsersModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -18,14 +18,19 @@ export class MessagesService {
         private readonly usersRepository: Repository<User>
     ) {}
 
-    async findAll(pagination: PaginationDto): Promise<any> {
+    async findAll(pagination: PaginationDto, userId: number): Promise<any> {
         const { limit = 50, offset= 0 } = pagination
         const messages = await this.messagesRepository.find({
             take: limit,
             skip: offset,
-            relations: ['de', 'para' ]
+            relations: ['de', 'para' ],
+            where: { de: {id: userId}}
         })
         console.log(messages)
+        if (!messages.length) {
+            throw new BadRequestException(`não existe mensagems cadastadas para o usuario ${userId}`)
+        }
+
         const data = {
             items: messages.length,
             pagination: "",
@@ -40,6 +45,10 @@ export class MessagesService {
         const messageUnic = await this.messagesRepository.findOne({
             where: { id: +id }
         })
+
+        if (!messageUnic) {
+            throw new BadRequestException(`item não encontrado ${id}`)
+        }
 
         return messageUnic
     }
